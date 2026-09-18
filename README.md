@@ -3,6 +3,15 @@
 [![Build Status](https://github.com/spring-petclinic/spring-petclinic-microservices/actions/workflows/maven-build.yml/badge.svg)](https://github.com/spring-petclinic/spring-petclinic-microservices/actions/workflows/maven-build.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+## Operations portfolio extension
+
+This working copy adds a candidate-owned operations layer around the upstream
+Spring Petclinic business application: an Nginx entry point, internal-only
+service ports, automated health and recovery checks, Prometheus alert rules,
+Alertmanager routing, and a controlled failure drill. See the
+[operations portfolio](docs/operations/README.md) for the architecture,
+verification commands, evidence, and ownership boundary.
+
 This microservices branch was initially derived from [AngularJS version](https://github.com/spring-petclinic/spring-petclinic-angular1) to demonstrate how to split sample Spring application into [microservices](http://www.martinfowler.com/articles/microservices.html).
 To achieve that goal, we use Spring Cloud Gateway, Spring Cloud Circuit Breaker, Spring Cloud Config, Micrometer Tracing, Resilience4j, Open Telemetry 
 and the Eureka Service Discovery from the [Spring Cloud Netflix](https://github.com/spring-cloud/spring-cloud-netflix) technology stack.

@@ -1,0 +1,100 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 12, "lineWidth": 2, "showPoints": "never", "spanNulls": true },
+          "decimals": 2,
+          "min": 0,
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "legend": { "calcs": ["lastNotNull", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum by (name) (rate(container_cpu_usage_seconds_total{name!=\"\",cpu=\"total\"}[5m])) * 100", "legendFormat": "{{name}}", "refId": "A" }
+      ],
+      "title": "Container CPU Usage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 12, "lineWidth": 2, "showPoints": "never", "spanNulls": true },
+          "min": 0,
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "options": { "legend": { "calcs": ["lastNotNull", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "max by (name) (container_memory_working_set_bytes{name!=\"\"})", "legendFormat": "{{name}}", "refId": "A" }
+      ],
+      "title": "Container Memory Working Set",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 12, "lineWidth": 2, "showPoints": "never", "spanNulls": true },
+          "min": 0,
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 9 },
+      "id": 3,
+      "options": { "legend": { "calcs": ["lastNotNull", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum by (name) (rate(container_network_receive_bytes_total{name!=\"\"}[5m]))", "legendFormat": "{{name}}", "refId": "A" }
+      ],
+      "title": "Container Network Receive",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 12, "lineWidth": 2, "showPoints": "never", "spanNulls": true },
+          "min": 0,
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 9 },
+      "id": 4,
+      "options": { "legend": { "calcs": ["lastNotNull", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "targets": [
+        { "datasource": "Prometheus", "expr": "sum by (name) (rate(container_network_transmit_bytes_total{name!=\"\"}[5m]))", "legendFormat": "{{name}}", "refId": "A" }
+      ],
+      "title": "Container Network Transmit",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["spring-petclinic", "operations", "cadvisor"],
+  "templating": { "list": [] },
+  "time": { "from": "now-30m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Spring Petclinic Container Resources",
+  "uid": "petclinic-container-resources",
+  "version": 1
+}

@@ -21,3 +21,10 @@ target/
 generated/
 
 **/.DS_Store
+
+# Local Compose credentials
+.env
+
+# Generated database backups and checksums
+backups/mysql/*.sql
+backups/mysql/*.sha256

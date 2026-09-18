@@ -1,0 +1,12 @@
+global:
+  resolve_timeout: 1m
+
+route:
+  receiver: operations
+  group_by: ['alertname', 'job']
+  group_wait: 10s
+  group_interval: 30s
+  repeat_interval: 4h
+
+receivers:
+- name: operations

@@ -1,0 +1,23 @@
+groups:
+- name: petclinic-service-availability
+  rules:
+  - alert: PetclinicServiceDown
+    expr: up{job=~"customers-service|visits-service|vets-service"} == 0
+    for: 30s
+    labels:
+      severity: critical
+      category: availability
+    annotations:
+      summary: "Petclinic service {{ $labels.job }} is down"
+      description: "Prometheus cannot scrape {{ $labels.instance }} for more than 30 seconds."
+- name: petclinic-resource-drill
+  rules:
+  - alert: PetclinicCpuDrillHigh
+    expr: sum by (name) (rate(container_cpu_usage_seconds_total{job="cadvisor",name="petclinic-cpu-drill",cpu="total"}[1m])) > 0.30
+    for: 30s
+    labels:
+      severity: warning
+      category: resource-drill
+    annotations:
+      summary: "CPU drill above 0.30 cores"
+      description: "Isolated drill container {{ $labels.name }} exceeded 0.30 CPU cores for 30 seconds."

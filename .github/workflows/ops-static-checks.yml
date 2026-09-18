@@ -1,0 +1,32 @@
+name: Operations static checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - docker-compose.yml
+      - docker/prometheus/**
+      - scripts/ops/*.sh
+      - .github/workflows/ops-static-checks.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - docker-compose.yml
+      - docker/prometheus/**
+      - scripts/ops/*.sh
+      - .github/workflows/ops-static-checks.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-operations-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Compose, Prometheus, and Bash files
+        run: bash scripts/ops/ci-static-checks.sh
