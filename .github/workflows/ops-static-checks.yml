@@ -4,15 +4,23 @@ on:
   push:
     branches: [main]
     paths:
+      - .env.example
+      - README.md
       - docker-compose.yml
       - docker/prometheus/**
+      - docs/operations/**
+      - scripts/ops/*.ps1
       - scripts/ops/*.sh
       - .github/workflows/ops-static-checks.yml
   pull_request:
     branches: [main]
     paths:
+      - .env.example
+      - README.md
       - docker-compose.yml
       - docker/prometheus/**
+      - docs/operations/**
+      - scripts/ops/*.ps1
       - scripts/ops/*.sh
       - .github/workflows/ops-static-checks.yml
   workflow_dispatch:
@@ -26,7 +34,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validate Compose, Prometheus, and Bash files
         run: bash scripts/ops/ci-static-checks.sh
+
+      - name: Validate PowerShell files and local documentation links
+        shell: pwsh
+        run: ./scripts/ops/verify-repository-assets.ps1

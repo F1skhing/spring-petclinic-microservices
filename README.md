@@ -5,12 +5,78 @@
 
 ## Operations portfolio extension
 
-This working copy adds a candidate-owned operations layer around the upstream
-Spring Petclinic business application: an Nginx entry point, internal-only
-service ports, automated health and recovery checks, Prometheus alert rules,
-Alertmanager routing, and a controlled failure drill. See the
-[operations portfolio](docs/operations/README.md) for the architecture,
-verification commands, evidence, and ownership boundary.
+This fork keeps the upstream Spring Petclinic business code and adds a
+candidate-owned operations layer: a single Nginx entry point, internal-only
+business service ports, persistent MySQL with tested backup/restore,
+container monitoring and alerts, distributed tracing, controlled failure
+drills, repeatable verification scripts, and operations-focused CI checks.
+
+The complete architecture, evidence map, ownership boundary, and drill notes
+are in the [operations portfolio](docs/operations/README.md).
+
+### Operations quick start
+
+Prerequisites: Docker Desktop or Docker Engine with Compose v2, at least 8 GiB
+of memory available to Docker, and PowerShell 5.1+ or Bash.
+
+1. Create a local environment file and replace both example passwords. The
+   `.env` file is ignored by Git and must not be committed.
+
+   PowerShell:
+
+   ```powershell
+   Copy-Item .env.example .env
+   notepad .env
+   ```
+
+   Bash:
+
+   ```bash
+   cp .env.example .env
+   ${EDITOR:-vi} .env
+   ```
+
+2. Validate the resolved Compose configuration without printing secrets, then
+   start the verified core stack. The GenAI service is intentionally omitted
+   because it requires a separately managed AI provider key.
+
+   ```bash
+   docker compose config --quiet
+   docker compose up -d --wait --wait-timeout 300 \
+     mysql config-server discovery-server \
+     customers-service visits-service vets-service \
+     api-gateway nginx-gateway tracing-server \
+     alertmanager cadvisor prometheus-server grafana-server
+   ```
+
+3. Run the nine-item stack verification.
+
+   PowerShell:
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\scripts\ops\verify-stack.ps1
+   ```
+
+   Bash / WSL:
+
+   ```bash
+   bash scripts/ops/verify-stack.sh
+   ```
+
+4. Open the user entry point at <http://localhost:8080>. Local management
+   endpoints are Grafana at <http://localhost:3030>, Prometheus at
+   <http://localhost:9091>, Alertmanager at <http://localhost:9093>, Eureka at
+   <http://localhost:8761>, and Zipkin at <http://localhost:9411/zipkin/>.
+
+5. Stop the stack without deleting the MySQL named volume:
+
+   ```bash
+   docker compose stop
+   ```
+
+Do **not** run `docker compose down -v` unless destroying the database volume
+is explicitly intended. This is a local WSL2 / Docker Compose portfolio
+environment, not a production high-availability deployment.
 
 This microservices branch was initially derived from [AngularJS version](https://github.com/spring-petclinic/spring-petclinic-angular1) to demonstrate how to split sample Spring application into [microservices](http://www.martinfowler.com/articles/microservices.html).
 To achieve that goal, we use Spring Cloud Gateway, Spring Cloud Circuit Breaker, Spring Cloud Config, Micrometer Tracing, Resilience4j, Open Telemetry 
@@ -194,7 +260,7 @@ A JMeter load testing script is available to stress the application and generate
 
 * An anonymous access and a Prometheus datasource are setup.
 * A `Spring Petclinic Metrics` Dashboard is available at the URL http://localhost:3030/d/69JXeR0iw/spring-petclinic-metrics.
-You will find the JSON configuration file here: [docker/grafana/dashboards/grafana-petclinic-dashboard.json]().
+You will find the JSON configuration file here: [docker/grafana/dashboards/grafana-petclinic-dashboard.json](docker/grafana/dashboards/grafana-petclinic-dashboard.json).
 * You may create your own dashboard or import the [Micrometer/SpringBoot dashboard](https://grafana.com/dashboards/4701) via the Import Dashboard menu item.
 The id for this dashboard is `4701`.
 
@@ -220,12 +286,10 @@ All those three REST controllers `OwnerResource`, `PetResource` and `VisitResour
 | Circuit Breaker                 | [Resilience4j fallback method](spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiGatewayController.java)  |
 | Grafana / Prometheus Monitoring | [Micrometer implementation](https://micrometer.io/), [Spring Boot Actuator Production Ready Metrics] |
 
-|  Front-end module | Files |
-|-------------------|-------|
-| Node and NPM      | [The frontend-maven-plugin plugin downloads/installs Node and NPM locally then runs Bower and Gulp](spring-petclinic-ui/pom.xml)  |
-| Bower             | [JavaScript libraries are defined by the manifest file bower.json](spring-petclinic-ui/bower.json)  |
-| Gulp              | [Tasks automated by Gulp: minify CSS and JS, generate CSS from LESS, copy other static resources](spring-petclinic-ui/gulpfile.js)  |
-| Angular JS        | [app.js, controllers and templates](spring-petclinic-ui/src/scripts/)  |
+| Front-end module | Files |
+|------------------|-------|
+| Maven build      | [API Gateway build configuration](spring-petclinic-api-gateway/pom.xml) |
+| AngularJS        | [app.js, controllers and templates](spring-petclinic-api-gateway/src/main/resources/static/scripts/) |
 
 ## Pushing to a Docker registry
 
